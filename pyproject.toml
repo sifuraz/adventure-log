@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "adventure-log"
+version = "0.1.0"
+description = ""
+authors = ["Martin Borner <martin.borner@kiwi.com>"]
+readme = "README.md"
+packages = [{include = "adventure_log"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+psycopg2 = "^2.9.5"
+fastapi = "^0.94.0"
+uvicorn = "^0.21.0"
+python-dotenv = "^1.0.0"
+sqlalchemy = "^2.0.5.post1"
+alembic = "^1.10.2"
+psycopg2-binary = "^2.9.5"
+black = "^23.1.0"
+pre-commit = "^3.1.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
