@@ -1,6 +1,5 @@
-from dotenv import load_dotenv
-
-load_dotenv()  # take environment variables from .env.
+from db.setup import session
+from db.models.user import User
 
 # This is a sample Python script.
 
@@ -9,13 +8,14 @@ load_dotenv()  # take environment variables from .env.
 # TODO uvicorn setup
 
 
-def print_hi(name):
+def print_hi():
+    user: User = session.query(User).filter_by(username="test").first()
     # Use a breakpoint in the code line below to debug your script.
-    print(f"Hi, {name}")  # Press ⌘F8 to toggle the breakpoint.
+    print(f"Hi, {user.email}")  # Press ⌘F8 to toggle the breakpoint.
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == "__main__":
-    print_hi("PyCharm")
+    print_hi()
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
