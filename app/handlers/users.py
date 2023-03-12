@@ -2,25 +2,24 @@ import bcrypt
 from fastapi import HTTPException
 
 from ..models import users
-from ..schemas.users import UserCreate
 
 
-def create_user(user: UserCreate):
+def create_user(username: str, email: str, password: str) -> users.User:
     """Create a new user."""
-    if users.get_user_by_username(user.username):
+    if users.get_user_by_username(username):
         raise HTTPException(
             status_code=409,
             detail="Username already exists",
         )
-    if users.get_user_by_email(user.email):
+    if users.get_user_by_email(email):
         raise HTTPException(
             status_code=409,
             detail="Email already exists",
         )
-    password_hash = get_password_hash(user.password)
+    password_hash = get_password_hash(password)
 
     db_user = users.create_user(
-        username=user.username, email=user.email, password_hash=password_hash
+        username=username, email=email, password_hash=password_hash
     )
     return db_user
 

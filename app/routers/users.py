@@ -8,5 +8,5 @@ router = APIRouter()
 
 @router.post("/user", status_code=201)
 async def create_user(user: UserCreate):
-    users.create_user(user)
+    users.create_user(user.username, user.email, user.password)
     return {"message": "User created successfully"}
