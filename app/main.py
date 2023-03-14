@@ -28,6 +28,14 @@ app.mount(
 templates = Jinja2Templates(directory=str(Path(BASE_DIR, "templates")))
 
 
+@app.get("/")
+def root(user: User = Depends(get_current_user)):
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+
+    return RedirectResponse(url="/dashboard", status_code=303)
+
+
 @app.get("/login", response_class=HTMLResponse)
 async def show_login(request: Request, error=None):
     return templates.TemplateResponse(
@@ -36,8 +44,8 @@ async def show_login(request: Request, error=None):
 
 
 @app.get("/dashboard")
-def dashboard(user: User = Depends(get_current_user)):
+def dashboard(request: Request, error=None, user: User = Depends(get_current_user)):
     if not user:
         return RedirectResponse(url="/login", status_code=303)
 
-    return {"message": f"Welcome {user.username}!"}
+    return templates.TemplateResponse("base.html", {"request": request, "error": error})
