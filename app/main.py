@@ -48,4 +48,6 @@ def dashboard(request: Request, error=None, user: User = Depends(get_current_use
     if not user:
         return RedirectResponse(url="/login", status_code=303)
 
-    return templates.TemplateResponse("base.html", {"request": request, "error": error})
+    return templates.TemplateResponse(
+        "dashboard.html", {"request": request, "error": error}
+    )
