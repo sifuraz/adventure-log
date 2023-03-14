@@ -1,9 +1,11 @@
 from pathlib import Path
 
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
+from fastapi import Depends, FastAPI, Request
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
+from .db.models.user import User
+from .models.users import get_current_user
 from .routers import users
 
 # TODO response schemas granularity
@@ -27,3 +29,11 @@ async def show_login(request: Request, error=None):
     return templates.TemplateResponse(
         "login.html", {"request": request, "error": error}
     )
+
+
+@app.get("/dashboard")
+def dashboard(user: User = Depends(get_current_user)):
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+
+    return {"message": f"Welcome {user.username}!"}

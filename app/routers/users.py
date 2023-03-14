@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from fastapi.responses import RedirectResponse
 
 from ..handlers import users
 from ..schemas.users import UserCreate, UserLogin
@@ -14,5 +15,7 @@ async def create_user(user: UserCreate):
 
 @router.post("/user/login", status_code=200)
 async def login_user(user: UserLogin):
-    users.login_user(user.username, user.password)
-    return {"message": "User logged in successfully"}
+    session_token = users.login_user(user.username, user.password)
+    response = RedirectResponse(url="/dashboard", status_code=303)
+    response.set_cookie(key="session_token", value=session_token)
+    return response

@@ -2,6 +2,7 @@ import bcrypt
 from fastapi import HTTPException
 
 from ..models import users
+from ..utils import security
 
 
 def create_user(username: str, email: str, password: str) -> users.User:
@@ -16,15 +17,16 @@ def create_user(username: str, email: str, password: str) -> users.User:
             status_code=409,
             detail="Email already exists",
         )
-    password_hash = get_password_hash(password)
+    password_hash = security.get_password_hash(password)
 
     db_user = users.create_user(
         username=username, email=email, password_hash=password_hash
     )
+    # TODO redirect after registration
     return db_user
 
 
-def login_user(username: str, password: str) -> users.User:
+def login_user(username: str, password: str) -> str:
     """Login a user."""
     if not (db_user := users.get_user_by_username(username)):
         raise HTTPException(
@@ -38,9 +40,8 @@ def login_user(username: str, password: str) -> users.User:
             status_code=401,
             detail="Incorrect password",
         )
-    return db_user
-
-
-def get_password_hash(password: str) -> str:
-    """Hash a password."""
-    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+    session_token = security.generate_session_token(
+        db_user.username, db_user.password_hash
+    )
+    users.store_user_session(session_token, db_user.id)
+    return session_token

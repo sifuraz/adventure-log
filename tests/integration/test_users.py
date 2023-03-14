@@ -6,6 +6,7 @@ from app.models import users as uut
 
 def test_create_user(session):
     """Test creating a new user."""
+    # TODO: Figure out how to mock the session
     print("Creating user")
     user = uut.create_user("testuser2", "test2@example.com", "password")
 
