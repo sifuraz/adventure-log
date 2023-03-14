@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    {% block extra_head %}{% endblock %}
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+<header>
+    <nav class="navbar">
+        <div id="navbar-menu" class="navbar-menu">
+            <div class="navbar-start">
+                <a class="navbar-item" href="#">Home</a>
+                <a class="navbar-item" href="#">About</a>
+                <a class="navbar-item" href="#">Contact</a>
+            </div>
+        </div>
+        <div class="navbar-brand">
+            <h1 class="main-title">Adventure Log</h1>
+            <a class="navbar-item" href="#">
+                <img src="static/images/quill.png" alt="Logo">
+            </a>
+        </div>
+    </nav>
+</header>
+{% block content %}{% endblock %}
+</body>
+</html>

@@ -19,7 +19,7 @@ body {
 
 /* Title */
 .title {
-  font-family: "Old Standard TT", serif;
+  font-family: 'Dragon is Coming', cursive;
   color: #694d35;
   font-size: 36px;
   text-align: center;
@@ -41,7 +41,7 @@ body {
 
 /* Label */
 .label {
-  font-family: "Old Standard TT", serif;
+  font-family: 'Dragon is Coming', cursive;
   color: #694d35;
   font-size: 24px;
   font-weight: bold;
@@ -50,7 +50,7 @@ body {
 
 /* Button */
 .button {
-  font-family: "Old Standard TT", serif;
+  font-family: 'Dragon is Coming', cursive;
   background-color: #694d35;
   border: none;
   border-radius: 5px;
@@ -84,4 +84,58 @@ body {
 /* Hidden */
 .is-hidden {
   display: none;
+}
+
+/* Navbar */
+.navbar {
+  background-color: transparent;
+  padding: 10px;
+}
+
+/* Navbar brand */
+.navbar-brand {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.navbar-brand img {
+  height: 120px;
+  margin-right: 10px;
+  background-color: transparent;
+}
+
+.navbar-brand span {
+  font-size: 28px;
+  color: #f9eede;
+  font-weight: bold;
+  text-shadow: 2px 2px 5px #c9b29c;
+}
+
+/* Navbar menu */
+.navbar-menu {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.navbar-menu a {
+  font-family: 'Dragon is Coming', cursive;
+  font-size: 20px;
+  color: #694d35;
+  text-shadow: 2px 2px 5px #c9b29c;
+  margin-right: 20px;
+  transition: all 0.3s ease;
+}
+
+.navbar-menu a:hover {
+  color: #fff;
+  text-shadow: none;
+}
+
+.main-title {
+  font-family: 'Dragon is Coming', cursive;
+  font-size: 48px;
+  text-align: center;
+  color: #483424;
 }

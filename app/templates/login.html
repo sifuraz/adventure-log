@@ -1,71 +1,67 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Login</title>
-    <link rel="stylesheet" href="static/css/style.css">
-  </head>
-  <body>
-    <section class="section">
-      <div class="container">
-        <h1 class="title">Login</h1>
-        <div class="notification is-danger is-hidden" id="error" >{{ error }}</div>
-        <form id="login-form" method="POST" action="{{ url_for('login_user') }}">
-          <div class="field">
-            <label class="label">Username</label>
-            <div class="control">
-              <input class="input" id="username" type="text" name="username" required>
-            </div>
-          </div>
-          <div class="field">
-            <label class="label">Password</label>
-            <div class="control">
-              <input class="input" id="password" type="password" name="password" required>
-            </div>
-          </div>
-          <div class="field">
-            <div class="control">
-              <button class="button is-primary" type="submit">Login</button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </section>
-    <script>
-      const loginForm = document.getElementById('login-form');
-      const errorElement = document.getElementById('error');
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
 
-      loginForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const formData = new FormData(loginForm);
-        const formJSON = Object.fromEntries(formData.entries());
-        const response = await fetch('/user/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(formJSON)
-        });
-        console.log("Response:");
-        console.log(response);
-        if (response.status === 200) {
-          // Redirect to a new page
-          window.location.href = '/dashboard';
-        } else if (response.status === 401) {
-          // Display an error message for incorrect password
-          const errorMessage = await response.json();
-          errorElement.classList.remove('is-hidden');
-          errorElement.textContent = 'Error: ' + errorMessage.detail;
-        } else if (response.status === 404) {
-          // Display an error message for not found user
-          const errorMessage = await response.json();
-          errorElement.classList.remove('is-hidden');
-          errorElement.textContent = 'Error: ' + errorMessage.detail;
-        } else {
-          // Display a generic error message
-          errorElement.classList.remove('is-hidden');
-          errorElement.textContent = 'An error occurred. Please try again later.';
-        }
-      });
-    </script>
-  </body>
-</html>
+{% block content %}
+<section class="section">
+  <div class="container">
+    <h1 class="title">Login</h1>
+    <div class="notification is-danger is-hidden" id="error" >{{ error }}</div>
+    <form id="login-form" method="POST" action="{{ url_for('login_user') }}">
+      <div class="field">
+        <label class="label">Username</label>
+        <div class="control">
+          <input class="input" id="username" type="text" name="username" required>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Password</label>
+        <div class="control">
+          <input class="input" id="password" type="password" name="password" required>
+        </div>
+      </div>
+      <div class="field">
+        <div class="control">
+          <button class="button is-primary" type="submit">Login</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+<script>
+  const loginForm = document.getElementById('login-form');
+  const errorElement = document.getElementById('error');
+
+  loginForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const formData = new FormData(loginForm);
+    const formJSON = Object.fromEntries(formData.entries());
+    const response = await fetch('/user/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formJSON)
+    });
+    console.log("Response:");
+    console.log(response);
+    if (response.status === 200) {
+      // Redirect to a new page
+      window.location.href = '/dashboard';
+    } else if (response.status === 401) {
+      // Display an error message for incorrect password
+      const errorMessage = await response.json();
+      errorElement.classList.remove('is-hidden');
+      errorElement.textContent = 'Error: ' + errorMessage.detail;
+    } else if (response.status === 404) {
+      // Display an error message for not found user
+      const errorMessage = await response.json();
+      errorElement.classList.remove('is-hidden');
+      errorElement.textContent = 'Error: ' + errorMessage.detail;
+    } else {
+      // Display a generic error message
+      errorElement.classList.remove('is-hidden');
+      errorElement.textContent = 'An error occurred. Please try again later.';
+    }
+  });
+</script>
+{% endblock %}
