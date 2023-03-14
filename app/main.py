@@ -43,6 +43,13 @@ async def show_login(request: Request, error=None):
     )
 
 
+@app.get("/register", response_class=HTMLResponse)
+async def show_register(request: Request, error=None):
+    return templates.TemplateResponse(
+        "register.html", {"request": request, "error": error}
+    )
+
+
 @app.get("/dashboard")
 def dashboard(request: Request, error=None, user: User = Depends(get_current_user)):
     if not user:

@@ -9,8 +9,10 @@ router = APIRouter()
 
 @router.post("/user", status_code=201)
 async def create_user(user: UserCreate):
-    users.create_user(user.username, user.email, user.password)
-    return {"message": "User created successfully"}
+    session_token = users.create_user(user.username, user.email, user.password)
+    response = RedirectResponse(url="/dashboard", status_code=303)
+    response.set_cookie(key="session_token", value=session_token)
+    return response
 
 
 @router.post("/user/login", status_code=200)

@@ -1,16 +1,22 @@
 {% extends "base.html" %}
-{% block title %}Login{% endblock %}
+{% block title %}Register{% endblock %}
 
 {% block content %}
 <section class="section">
     <div class="container">
-        <h1 class="title">Login</h1>
+        <h1 class="title">Register</h1>
         <div class="notification is-danger is-hidden" id="error">{{ error }}</div>
-        <form id="login-form" method="POST" action="{{ url_for('login_user') }}">
+        <form id="register-form" method="POST" action="{{ url_for('create_user') }}">
             <div class="field">
                 <label class="label">Username</label>
                 <div class="control">
                     <input class="input" id="username" type="text" name="username" required>
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">Email</label>
+                <div class="control">
+                    <input class="input" id="email" type="text" name="email" required>
                 </div>
             </div>
             <div class="field">
@@ -21,21 +27,21 @@
             </div>
             <div class="field">
                 <div class="control">
-                    <button class="button is-primary" type="submit">Login</button>
+                    <button class="button is-primary" type="submit">Register</button>
                 </div>
             </div>
         </form>
     </div>
 </section>
 <script>
-    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
     const errorElement = document.getElementById('error');
 
-    loginForm.addEventListener('submit', async (event) => {
+    registerForm.addEventListener('submit', async (event) => {
         event.preventDefault();
-        const formData = new FormData(loginForm);
+        const formData = new FormData(registerForm);
         const formJSON = Object.fromEntries(formData.entries());
-        const response = await fetch('/user/login', {
+        const response = await fetch('/user', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -45,13 +51,8 @@
         if (response.status === 200) {
             // Redirect to a new page
             window.location.href = response.url;
-        } else if (response.status === 401) {
-            // Display an error message for incorrect password
-            const errorMessage = await response.json();
-            errorElement.classList.remove('is-hidden');
-            errorElement.textContent = 'Error: ' + errorMessage.detail;
-        } else if (response.status === 404) {
-            // Display an error message for not found user
+        } else if (response.status === 409) {
+            // Display an error message for already existing user
             const errorMessage = await response.json();
             errorElement.classList.remove('is-hidden');
             errorElement.textContent = 'Error: ' + errorMessage.detail;
