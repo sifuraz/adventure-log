@@ -9,25 +9,30 @@
         <div>
             {% for adventure in adventures %}
             <div class="adventure-details">
-                <h2>{{ adventure.name }}</h2>
-                <p>Type: {{ adventure.type }}</p>
-                <h3>Players:</h3>
+                <header>
+                    <p class="subheading">{{ adventure.type | replace("_", " ") | capitalize }}</p>
+                    <h2>{{ adventure.name }}</h2>
+                </header>
+                <h3>Featuring:</h3>
                 <ul>
                     {% for player in adventure.players %}
-                    <ul>
-                        {% if player.role == "dm" %}
-                        <!--TODO crown icon-->
-                        <li>{{ player.username }} as Dungeon Master</li>
-                        {% elif player.character %}
-                        <li>{{ player.username }} as {{ player.character.name }}</li>
-                        {% else %}
-                        <li>{{ player.username }}</li>
-                        {% endif %}
-                    </ul>
+                    {% if player.role == "dm" %}
+                    <!--TODO crown icon-->
+                    <li>{{ player.username }} as Dungeon Master</li>
+                    {% elif player.character %}
+                    <li>{{ player.username }} as {{ player.character.name }}</li>
+                    {% else %}
+                    <li>{{ player.username }}</li>
+                    {% endif %}
                     {% endfor %}
                 </ul>
             </div>
             {% endfor %}
+            <div class="adventure-details">
+                <h2>New story...</h2>
+                <!--TODO new adventure-->
+                <a href="/adventure/new" class="button is-primary">Create new adventure</a>
+            </div>
         </div>
     </div>
 </section>

@@ -1,5 +1,5 @@
-from ..db.models.adventures import Adventure, AdventurePlayer, AdventureRoleEnum
-from ..models.adventures import get_adventures_by_user_id
+from ..db.models.adventures import Adventure, AdventurePlayer, AdventureTypeEnum
+from ..models.adventures import create_adventure_and_dm, get_adventures_by_user_id
 
 
 def get_adventures_details(user_id: int) -> list[dict]:
@@ -61,3 +61,9 @@ def get_adventure_characters_details(
         }
         characters.append(character)
     return characters
+
+
+def create_adventure(name: str, adventure_type: AdventureTypeEnum, user_id: int):
+    """Create a new adventure."""
+    adventure = create_adventure_and_dm(name, adventure_type, user_id)
+    return adventure.id

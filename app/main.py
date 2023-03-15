@@ -13,6 +13,7 @@ from .models.users import get_current_user
 from .routers import users
 
 # TODO response schemas granularity
+# TODO global dependencies
 app = FastAPI()
 app.include_router(
     users.router,
@@ -40,14 +41,14 @@ def root(user: User = Depends(get_current_user)):
 
 
 @app.get("/login", response_class=HTMLResponse)
-async def show_login(request: Request, error=None):
+def show_login(request: Request, error=None):
     return templates.TemplateResponse(
         "login.html", {"request": request, "error": error}
     )
 
 
 @app.get("/register", response_class=HTMLResponse)
-async def show_register(request: Request, error=None):
+def show_register(request: Request, error=None):
     return templates.TemplateResponse(
         "register.html", {"request": request, "error": error}
     )

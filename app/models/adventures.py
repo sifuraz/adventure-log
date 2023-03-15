@@ -7,10 +7,10 @@ from ..db.models.adventures import (
 )
 
 
-def create_adventure(
+def create_adventure_and_dm(
     name: str, adventure_type: AdventureTypeEnum, user_id: int
 ) -> Adventure:
-    """Create a new adventure."""
+    """Create a new adventure and dm."""
     adventure = Adventure(name=name, type=adventure_type)
     database.add(adventure)
     database.commit()
