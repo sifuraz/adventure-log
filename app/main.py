@@ -5,7 +5,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from .db.models.user import User
+from .db.models.users import User
 from .models.users import get_current_user
 from .routers import users
 

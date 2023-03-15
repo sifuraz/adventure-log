@@ -1,5 +1,5 @@
 """Tests for models/test_users.py."""
-from app.db.models.user import User
+from app.db.models.users import User
 
 from app.models import users as uut
 

@@ -1,7 +1,7 @@
 from fastapi import Cookie
 
 from ..db.config import database, redis
-from ..db.models.user import User
+from ..db.models.users import User
 
 
 def create_user(username: str, email: str, password_hash: str) -> User:

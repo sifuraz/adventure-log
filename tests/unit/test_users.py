@@ -3,7 +3,7 @@
 from fastapi import HTTPException
 import pytest
 
-from app.db.models.user import User
+from app.db.models.users import User
 
 from app.handlers import users as uut
 
