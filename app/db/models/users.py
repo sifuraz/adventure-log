@@ -20,6 +20,6 @@ class User(Base, TimestampMixin):
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     # TODO: Add a column for the user's verification status
 
-    players: Mapped[List["AdventurePlayers"]] = relationship(
-        back_populates="adventure_players"
+    adventure_players: Mapped[List["AdventurePlayers"]] = relationship(
+        back_populates="player"
     )

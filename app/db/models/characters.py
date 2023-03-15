@@ -15,5 +15,5 @@ class Character(Base, TimestampMixin):
     # TODO: race, class, subclass, background, alignment, level, etc.
 
     adventure_players: Mapped[List["AdventurePlayers"]] = relationship(
-        back_populates="adventure_players"
+        back_populates="character"
     )

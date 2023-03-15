@@ -31,9 +31,9 @@ class AdventurePlayers(Base, TimestampMixin):
         ForeignKey("characters.id"), nullable=True
     )
 
-    adventure: Mapped["Adventure"] = relationship(back_populates="adventures")
-    player: Mapped["User"] = relationship(back_populates="users")
-    character: Mapped["Character"] = relationship(back_populates="characters")
+    adventure: Mapped["Adventure"] = relationship(back_populates="adventure_players")
+    player: Mapped["User"] = relationship(back_populates="adventure_players")
+    character: Mapped["Character"] = relationship(back_populates="adventure_players")
 
 
 class Adventure(Base, TimestampMixin):
@@ -43,6 +43,6 @@ class Adventure(Base, TimestampMixin):
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     type: Mapped[AdventureTypeEnum] = mapped_column(SQLEnum(AdventureTypeEnum))
 
-    players: Mapped[List["AdventurePlayers"]] = relationship(
-        back_populates="adventure_players"
+    adventure_players: Mapped[List["AdventurePlayers"]] = relationship(
+        back_populates="adventure"
     )
