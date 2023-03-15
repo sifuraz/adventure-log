@@ -1,5 +1,3 @@
-from typing import List
-
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -20,6 +18,6 @@ class User(Base, TimestampMixin):
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     # TODO: Add a column for the user's verification status
 
-    adventure_players: Mapped[List["AdventurePlayers"]] = relationship(
+    adventure_players: Mapped[list["AdventurePlayer"]] = relationship(
         back_populates="player"
     )

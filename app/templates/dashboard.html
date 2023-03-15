@@ -4,8 +4,31 @@
 {% block content %}
 <section class="section">
     <div class="container">
-        <h1 class="title">Home</h1>
+        <h1 class="title">My Adventures</h1>
         <div class="notification is-danger is-hidden" id="error">{{ error }}</div>
+        <div>
+            {% for adventure in adventures %}
+            <div class="adventure-details">
+                <h2>{{ adventure.name }}</h2>
+                <p>Type: {{ adventure.type }}</p>
+                <h3>Players:</h3>
+                <ul>
+                    {% for player in adventure.players %}
+                    <ul>
+                        {% if player.role == "dm" %}
+                        <!--TODO crown icon-->
+                        <li>{{ player.username }} as Dungeon Master</li>
+                        {% elif player.character %}
+                        <li>{{ player.username }} as {{ player.character.name }}</li>
+                        {% else %}
+                        <li>{{ player.username }}</li>
+                        {% endif %}
+                    </ul>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endfor %}
+        </div>
     </div>
 </section>
 {% endblock %}

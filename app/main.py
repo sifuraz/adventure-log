@@ -5,9 +5,10 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from .db.models import adventures, characters
+from .db.models.adventures import Adventure, AdventurePlayer
+from .db.models.characters import Character
 from .db.models.users import User
-from .models.adventures import get_adventures_by_user_id
+from .handlers.adventures import get_adventures_details
 from .models.users import get_current_user
 from .routers import users
 
@@ -56,7 +57,7 @@ async def show_register(request: Request, error=None):
 def dashboard(request: Request, error=None, user: User = Depends(get_current_user)):
     if not user:
         return RedirectResponse(url="/login", status_code=303)
-
+    adventures = get_adventures_details(user.id)
     return templates.TemplateResponse(
-        "dashboard.html", {"request": request, "error": error}
+        "dashboard.html", {"request": request, "error": error, "adventures": adventures}
     )

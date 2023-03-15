@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import List
 
 from sqlalchemy import Enum as SQLEnum, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -19,7 +18,7 @@ class AdventureTypeEnum(str, Enum):
     two_shot = "two_shot"
 
 
-class AdventurePlayers(Base, TimestampMixin):
+class AdventurePlayer(Base, TimestampMixin):
     __tablename__ = "adventure_players"
 
     adventure_id: Mapped[int] = mapped_column(
@@ -43,6 +42,6 @@ class Adventure(Base, TimestampMixin):
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     type: Mapped[AdventureTypeEnum] = mapped_column(SQLEnum(AdventureTypeEnum))
 
-    adventure_players: Mapped[List["AdventurePlayers"]] = relationship(
+    adventure_players: Mapped[list["AdventurePlayer"]] = relationship(
         back_populates="adventure"
     )

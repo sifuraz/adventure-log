@@ -1,5 +1,3 @@
-from typing import List
-
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -14,6 +12,6 @@ class Character(Base, TimestampMixin):
     name: Mapped[str] = mapped_column(String(50), nullable=False)
     # TODO: race, class, subclass, background, alignment, level, etc.
 
-    adventure_players: Mapped[List["AdventurePlayers"]] = relationship(
+    adventure_players: Mapped[list["AdventurePlayer"]] = relationship(
         back_populates="character"
     )
