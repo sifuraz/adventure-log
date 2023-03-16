@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <title>{% block title %}{% endblock %}</title>
     {% block extra_head %}{% endblock %}
+    {% block css %}
     <link rel="stylesheet" href="static/css/style.css">
+    {% endblock %}
 </head>
 <body>
 <header>
@@ -19,7 +21,9 @@
         <div class="navbar-brand">
             <h1 class="main-title">Adventure Log</h1>
             <a class="navbar-item" href="#">
+                {% block logo %}
                 <img src="static/images/quill.png" alt="Logo">
+                {% endblock %}
             </a>
         </div>
     </nav>

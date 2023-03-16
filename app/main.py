@@ -1,16 +1,13 @@
-from pathlib import Path
-
 from fastapi import Depends, FastAPI, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 
 from .db.models.adventures import Adventure, AdventurePlayer
 from .db.models.characters import Character
 from .db.models.users import User
 from .handlers.adventures import get_adventures_details
 from .models.users import get_current_user
-from .routers import users
+from .routers import adventures, users
+from .settings import static, templates
 
 # TODO response schemas granularity
 # TODO global dependencies
@@ -24,12 +21,13 @@ app.include_router(
         409: {"description": "User already exists"},
     },
 )
-
-BASE_DIR = Path(__file__).resolve().parent
-app.mount(
-    "/static", StaticFiles(directory=str(Path(BASE_DIR, "static"))), name="static"
+app.include_router(
+    adventures.router,
+    tags=["adventures"],
+    dependencies=[Depends(get_current_user)],
 )
-templates = Jinja2Templates(directory=str(Path(BASE_DIR, "templates")))
+
+app.mount("/static", static, name="static")
 
 
 @app.get("/")

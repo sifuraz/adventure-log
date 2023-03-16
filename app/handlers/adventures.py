@@ -1,5 +1,11 @@
+from fastapi import HTTPException
+
 from ..db.models.adventures import Adventure, AdventurePlayer, AdventureTypeEnum
-from ..models.adventures import create_adventure_and_dm, get_adventures_by_user_id
+from ..models.adventures import (
+    create_adventure_and_dm,
+    get_adventure_by_id,
+    get_adventures_by_user_id,
+)
 
 
 def get_adventures_details(user_id: int) -> list[dict]:
@@ -11,15 +17,20 @@ def get_adventures_details(user_id: int) -> list[dict]:
     # TODO: order by last activity
     adventures_details = []
     for adventure in adventures:
-        adventure_details = {
-            "id": adventure.id,
-            "name": adventure.name,
-            "type": adventure.type.value,
-            "players": get_adventure_players_details(adventure.adventure_players),
-            "characters": get_adventure_characters_details(adventure.adventure_players),
-        }
-        adventures_details.append(adventure_details)
+        adventures_details.append(adventure_details_dict(adventure))
     return adventures_details
+
+
+def adventure_details_dict(adventure: Adventure) -> dict:
+    """Get an adventure details as dict."""
+    adventure_details = {
+        "id": adventure.id,
+        "name": adventure.name,
+        "type": adventure.type.value,
+        "players": get_adventure_players_details(adventure.adventure_players),
+        "characters": get_adventure_characters_details(adventure.adventure_players),
+    }
+    return adventure_details
 
 
 def get_adventure_players_details(
@@ -65,5 +76,28 @@ def get_adventure_characters_details(
 
 def create_adventure(name: str, adventure_type: AdventureTypeEnum, user_id: int):
     """Create a new adventure."""
+    # TODO already exists
     adventure = create_adventure_and_dm(name, adventure_type, user_id)
     return adventure.id
+
+
+def is_adventure_player(adventure, user_id):
+    """Check if a user is a player in an adventure."""
+    adventure_player_ids = [
+        adventure_player.player_id for adventure_player in adventure.adventure_players
+    ]
+    return user_id in adventure_player_ids
+
+
+def get_adventure(adventure_id: int, user_id: int) -> dict:
+    """Get an adventure."""
+    adventure = get_adventure_by_id(adventure_id)
+    if not adventure:
+        raise HTTPException(status_code=404, detail="Adventure not found")
+
+    if not is_adventure_player(adventure, user_id):
+        raise HTTPException(
+            status_code=403, detail="You are not allowed to view this adventure"
+        )
+
+    return adventure_details_dict(adventure)

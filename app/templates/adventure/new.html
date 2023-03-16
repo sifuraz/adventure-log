@@ -1,0 +1,58 @@
+{% extends "nested_base.html" %}
+{% block title %}New Adventure{% endblock %}
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="title">New Adventure</h1>
+        <div class="notification is-danger is-hidden" id="error">{{ error }}</div>
+        <form id="new-adventure-form" method="POST" action="{{ url_for('create_adventure') }}">
+            <div class="field">
+                <label class="label">Name</label>
+                <div class="control">
+                    <input class="input" id="name" type="text" name="name" required>
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">Type</label>
+                <div class="control">
+                    <select class="input" id="type" name="type">
+                        {% for type in types %}
+                        <option value="{{ type.name }}">{{ type.name | replace("_", " ") | capitalize }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <button class="button is-primary" type="submit">Create</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+<script>
+    const newAdventureForm = document.getElementById('new-adventure-form');
+    const errorElement = document.getElementById('error');
+
+    newAdventureForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const formData = new FormData(newAdventureForm);
+        const formJSON = Object.fromEntries(formData.entries());
+        const response = await fetch('/adventure', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formJSON)
+        });
+        if (response.status === 200) {
+            // Redirect to a new page
+            window.location.href = response.url;
+        } else {
+            // Display a generic error message
+            errorElement.classList.remove('is-hidden');
+            errorElement.textContent = 'An error occurred. Please try again later.';
+        }
+    });
+</script>
+{% endblock %}

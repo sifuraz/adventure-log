@@ -26,7 +26,8 @@ def create_adventure_and_dm(
 
 
 def get_adventure_by_id(adventure_id: int) -> Adventure:
-    ...
+    """Get an adventure by id."""
+    return database.query(Adventure).get(adventure_id)
 
 
 def get_adventures_by_user_id(user_id: int) -> list[Adventure]:
