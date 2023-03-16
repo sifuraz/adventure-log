@@ -11,7 +11,7 @@
             <div class="adventure-details">
                 <header>
                     <p class="subheading">{{ adventure.type | replace("_", " ") | capitalize }}</p>
-                    <h2>{{ adventure.name }}</h2>
+                    <h2><a href="{{ url_for('show_adventure', adventure_id=adventure.id) }}">{{ adventure.name }}</a></h2>
                 </header>
                 <h3>Featuring:</h3>
                 <ul>

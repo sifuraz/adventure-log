@@ -1,5 +1,28 @@
 {% extends "nested_base.html" %}
 {% block title %}{{ adventure.name }}{% endblock %}
+{% block main_title %}{{ adventure.name }}{% endblock %}
 {% block content %}
-
+<section class="section">
+    <div class="container">
+        <div class="notification is-danger is-hidden" id="error">{{ error }}</div>
+        <div>
+            <div class="adventure-details">
+                <p class="subheading">{{ adventure.type | replace("_", " ") | capitalize }}</p>
+                <h3>Featuring:</h3>
+                <ul>
+                    {% for player in adventure.players %}
+                    {% if player.role == "dm" %}
+                    <!--TODO crown icon-->
+                    <li>{{ player.username }} as Dungeon Master</li>
+                    {% elif player.character %}
+                    <li>{{ player.username }} as {{ player.character.name }}</li>
+                    {% else %}
+                    <li>{{ player.username }}</li>
+                    {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}

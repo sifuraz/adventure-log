@@ -61,8 +61,14 @@ def show_register(request: Request, error=None):
 def dashboard(request: Request, error=None, user: User = Depends(get_current_user)):
     if not user:
         return RedirectResponse(url="/login", status_code=303)
-    adventures = get_adventures_details(user.id)
+
+    adventures_details = get_adventures_details(user.id)
     return templates.TemplateResponse(
         "dashboard.html",
-        {"request": request, "error": error, "adventures": adventures, "user": user},
+        {
+            "request": request,
+            "error": error,
+            "adventures": adventures_details,
+            "user": user,
+        },
     )
