@@ -5,7 +5,7 @@ from .db.models.adventures import Adventure, AdventurePlayer
 from .db.models.characters import Character
 from .db.models.users import User
 from .handlers.adventures import get_adventures_details
-from .models.users import get_current_user
+from .models.users import clear_user_session, get_current_user
 from .routers import adventures, users
 from .settings import static, templates
 
@@ -39,10 +39,15 @@ def root(user: User = Depends(get_current_user)):
 
 
 @app.get("/login", response_class=HTMLResponse)
+@app.get(
+    "/logout", response_class=HTMLResponse, dependencies=[Depends(clear_user_session)]
+)
 def show_login(request: Request, error=None):
-    return templates.TemplateResponse(
+    response = templates.TemplateResponse(
         "login.html", {"request": request, "error": error}
     )
+    response.delete_cookie(key="session_token")
+    return response
 
 
 @app.get("/register", response_class=HTMLResponse)
@@ -58,5 +63,6 @@ def dashboard(request: Request, error=None, user: User = Depends(get_current_use
         return RedirectResponse(url="/login", status_code=303)
     adventures = get_adventures_details(user.id)
     return templates.TemplateResponse(
-        "dashboard.html", {"request": request, "error": error, "adventures": adventures}
+        "dashboard.html",
+        {"request": request, "error": error, "adventures": adventures, "user": user},
     )

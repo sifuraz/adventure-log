@@ -27,7 +27,7 @@ def new_adventure(request: Request, error=None, user: User = Depends(get_current
 
     return templates.TemplateResponse(
         "adventure/new.html",
-        {"request": request, "error": error, "types": AdventureTypeEnum},
+        {"request": request, "error": error, "types": AdventureTypeEnum, "user": user},
     )
 
 
@@ -45,5 +45,5 @@ def show_adventure(
 
     return templates.TemplateResponse(
         "adventure/show.html",
-        {"request": request, "error": error, "adventure": adventure},
+        {"request": request, "error": error, "adventure": adventure, "user": user},
     )
