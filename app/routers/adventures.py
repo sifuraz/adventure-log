@@ -47,3 +47,9 @@ def show_adventure(
         "adventure/show.html",
         {"request": request, "error": error, "adventure": adventure, "user": user},
     )
+
+
+@router.post("/adventure/{adventure_id}/player", status_code=201)
+def add_player(player_email: str, user: User = Depends(get_current_user)):
+    """Add a player to an adventure."""
+    pass

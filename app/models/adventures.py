@@ -37,3 +37,13 @@ def get_adventures_by_user_id(user_id: int) -> list[Adventure]:
     )
     adventures = [adventure_player.adventure for adventure_player in adventure_players]
     return adventures
+
+
+def add_adventure_player(adventure_id: int, user_id: int):
+    """Add a player to an adventure."""
+    adventure_player = AdventurePlayer(
+        adventure_id=adventure_id, player_id=user_id, role=AdventureRoleEnum.player
+    )
+    database.add(adventure_player)
+    database.commit()
+    return

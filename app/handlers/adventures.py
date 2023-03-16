@@ -2,6 +2,7 @@ from fastapi import HTTPException
 
 from ..db.models.adventures import Adventure, AdventurePlayer, AdventureTypeEnum
 from ..models.adventures import (
+    add_adventure_player,
     create_adventure_and_dm,
     get_adventure_by_id,
     get_adventures_by_user_id,
@@ -101,3 +102,16 @@ def get_adventure(adventure_id: int, user_id: int) -> dict:
         )
 
     return adventure_details_dict(adventure)
+
+
+def add_player_to_adventure(adventure_id: int, user_id: int):
+    """Add a player to an adventure."""
+    adventure = get_adventure_by_id(adventure_id)
+    if not adventure:
+        raise HTTPException(status_code=404, detail="Adventure not found")
+
+    if is_adventure_player(adventure, user_id):
+        raise HTTPException(status_code=403, detail="Player already in adventure")
+
+    add_adventure_player(adventure_id, user_id)
+    return
