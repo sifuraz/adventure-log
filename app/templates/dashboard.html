@@ -29,9 +29,10 @@
             </div>
             {% endfor %}
             <div class="adventure-details">
-                <h2>New story...</h2>
-                <!--TODO new adventure-->
-                <a href="{{ url_for('new_adventure') }}">Create new adventure</a>
+                <header>
+                    <p class="subheading">Create new adventure</p>
+                    <h2><a href="{{ url_for('new_adventure') }}">New story...</a></h2>
+                </header>
             </div>
         </div>
     </div>
