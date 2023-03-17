@@ -7,6 +7,34 @@
         <h1 class="title">My Adventures</h1>
         <div class="notification is-danger is-hidden" id="error">{{ error }}</div>
         <div>
+            {% for adventure in invited_adventures %}
+            <div class="adventure-details">
+                <header>
+                    <p class="subheading">You are invited to join!</p>
+                    <h2>{{ adventure.name }}</h2>
+                </header>
+                <h3>Featuring:</h3>
+                <ul>
+                    {% for player in adventure.players %}
+                    {% if player.role == "dm" %}
+                    <!--TODO crown icon-->
+                    <li>{{ player.username }} as Dungeon Master</li>
+                    {% elif player.character %}
+                    <li>{{ player.username }} as {{ player.character.name }}</li>
+                    {% else %}
+                    <li>{{ player.username }}</li>
+                    {% endif %}
+                    {% endfor %}
+                </ul>
+                <form id="accept-form" data-adventure-id="{{ adventure.id }}"
+                      action="{{ url_for('accept_invitation') }}" method="post">
+                    <button class="button is-success" type="submit">Accept</button>
+                </form>
+                <button class="button is-danger-button" id="decline-button" data-adventure-id="{{ adventure.id }}">
+                    Decline
+                </button>
+            </div>
+            {% endfor %}
             {% for adventure in adventures %}
             <div class="adventure-details">
                 <header>
@@ -37,4 +65,68 @@
         </div>
     </div>
 </section>
+<script>
+    const acceptForms = document.querySelectorAll('#accept-form');
+    const errorElement = document.getElementById('error');
+
+    acceptForms.forEach(acceptForm => {
+        acceptForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const adventureId = acceptForm.dataset.adventureId;
+            const url = acceptForm.action;
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    adventure_id: adventureId
+                })
+            });
+            if (response.status === 201) {
+                window.location.reload();
+            } else if (response.status === 403 || response.status === 404) {
+                const errorMessage = await response.json();
+                errorElement.classList.remove('is-hidden');
+                errorElement.textContent = 'Error: ' + errorMessage.detail;
+            } else {
+                // Display a generic error message
+                errorElement.classList.remove('is-hidden');
+                errorElement.textContent = 'An error occurred. Please try again later.';
+            }
+        });
+    });
+
+    const declineButtons = document.querySelectorAll('.decline-button');
+
+    declineButtons.forEach(declineButton => {
+        declineButton.addEventListener('click', async (event) => {
+            event.preventDefault();
+            const adventureId = declineButton.dataset.adventureId;
+            const url = "{{ url_for('decline_invitation') }}";
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    adventure_id: adventureId
+                })
+            });
+            if (response.status === 200) {
+                window.location.reload();
+            } else if (response.status === 403 || response.status === 404) {
+                const errorMessage = await response.json();
+                errorElement.classList.remove('is-hidden');
+                errorElement.textContent = 'Error: ' + errorMessage.detail;
+            } else {
+                // Display a generic error message
+                errorElement.classList.remove('is-hidden');
+                errorElement.textContent = 'An error occurred. Please try again later.';
+            }
+        });
+    });
+
+
+</script>
 {% endblock %}

@@ -13,7 +13,12 @@ from ..models.adventures import (
     get_adventure_by_id,
     get_adventures_by_user_id,
 )
-from ..models.invitations import create_invitation, get_invitation
+from ..models.invitations import (
+    create_invitation,
+    get_invitation,
+    get_pending_invitations_for_email,
+    set_invitation_status,
+)
 from ..models.users import get_user_by_email, User
 
 
@@ -155,14 +160,54 @@ def get_pending_invitations(adventure: Adventure) -> list[str]:
     return invitations
 
 
-def add_player_to_adventure(adventure_id: int, user_id: int) -> None:
-    """Add a player to an adventure."""
+def get_invited_adventures(user_email: str) -> list[dict]:
+    """Get pending invitations for a user."""
+    invitations = []
+    for invitation in get_pending_invitations_for_email(user_email):
+        adventure_details = adventure_details_dict(invitation.adventure)
+        invitations.append(adventure_details)
+    return invitations
+
+
+def validate_invitation(adventure_id: int, user: User) -> Invitation:
+    """Validate an invitation."""
     adventure = get_adventure_by_id(adventure_id)
     if not adventure:
         raise HTTPException(status_code=404, detail="Adventure not found")
 
+    invitation: Invitation | None = get_invitation(adventure_id, user.email)
+    if not invitation:
+        raise HTTPException(status_code=404, detail="Invitation not found")
+
+    if invitation.status != InvitationStatusEnum.pending:
+        raise HTTPException(
+            status_code=403, detail=f"Invitation already {invitation.status}"
+        )
+
+    return invitation
+
+
+def decline_invitation(adventure_id: int, user: User) -> None:
+    """Decline an invitation."""
+    invitation = validate_invitation(adventure_id, user)
+
+    set_invitation_status(invitation, InvitationStatusEnum.declined)
+    return None
+
+
+def accept_invitation(adventure_id: int, user: User) -> None:
+    """Accept an invitation."""
+    invitation = validate_invitation(adventure_id, user)
+
+    add_adventure_player(adventure_id, user.id)
+    set_invitation_status(invitation, InvitationStatusEnum.accepted)
+    return None
+
+
+def add_player_to_adventure(adventure: Adventure, user_id: int) -> None:
+    """Add a player to an adventure."""
     if get_adventure_player(adventure, user_id):
         raise HTTPException(status_code=403, detail="Player already in adventure")
 
-    add_adventure_player(adventure_id, user_id)
+    add_adventure_player(adventure.id, user_id)
     return None

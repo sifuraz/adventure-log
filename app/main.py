@@ -5,7 +5,7 @@ from .db.models.adventures import Adventure, AdventurePlayer
 from .db.models.characters import Character
 from .db.models.invitations import Invitation
 from .db.models.users import User
-from .handlers.adventures import get_adventures_details
+from .handlers.adventures import get_adventures_details, get_invited_adventures
 from .models.users import clear_user_session, get_current_user
 from .routers import adventures, users
 from .settings import static, templates
@@ -64,12 +64,14 @@ def dashboard(request: Request, error=None, user: User = Depends(get_current_use
         return RedirectResponse(url="/login", status_code=303)
 
     adventures_details = get_adventures_details(user.id)
+    invited_adventures = get_invited_adventures(user.email)
     return templates.TemplateResponse(
         "dashboard.html",
         {
             "request": request,
             "error": error,
             "adventures": adventures_details,
+            "invited_adventures": invited_adventures,
             "user": user,
         },
     )

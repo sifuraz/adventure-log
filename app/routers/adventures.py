@@ -5,7 +5,7 @@ from ..db.models.adventures import AdventureTypeEnum
 from ..db.models.users import User
 from ..handlers import adventures
 from ..models.users import get_current_user
-from ..schemas.adventures import AdventureCreate, AdventureInvite
+from ..schemas.adventures import AdventureCreate, AdventureId, AdventureInvite
 from ..settings import templates
 
 
@@ -61,3 +61,27 @@ def invite_player(
         adventure_invite.adventure_id, user.id, adventure_invite.email
     )
     return JSONResponse(content=invitation, status_code=201)
+
+
+@router.post("/adventure/accept", status_code=201)
+def accept_invitation(
+    adventure_id: AdventureId, user: User = Depends(get_current_user)
+):
+    """Accept an invitation to an adventure."""
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+
+    adventures.accept_invitation(adventure_id.adventure_id, user)
+    return
+
+
+@router.put("/adventure/decline", status_code=200)
+def decline_invitation(
+    adventure_id: AdventureId, user: User = Depends(get_current_user)
+):
+    """Decline an invitation to an adventure."""
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+
+    adventures.decline_invitation(adventure_id.adventure_id, user)
+    return

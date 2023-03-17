@@ -11,3 +11,7 @@ class AdventureCreate(BaseModel):
 class AdventureInvite(BaseModel):
     email: str
     adventure_id: int
+
+
+class AdventureId(BaseModel):
+    adventure_id: int
