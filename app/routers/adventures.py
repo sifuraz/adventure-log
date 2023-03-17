@@ -54,8 +54,10 @@ def invite_player(
     adventure_invite: AdventureInvite, user: User = Depends(get_current_user)
 ):
     """Invite a player to an adventure."""
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+
     invitation = adventures.invite_player(
         adventure_invite.adventure_id, user.id, adventure_invite.email
     )
-    response_data = {"email": invitation.email, "status": invitation.status}
-    return JSONResponse(content=response_data)
+    return JSONResponse(content=invitation, status_code=201)

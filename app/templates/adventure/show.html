@@ -21,6 +21,14 @@
                     {% endif %}
                     {% endfor %}
                 </ul>
+                {% if adventure.pending_invitations %}
+                <h3>Pending Invitations:</h3>
+                <ul>
+                    {% for email in adventure.pending_invitations %}
+                    <li>{{ email }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
                 <button class="button" id="invite-player-btn">Invite Player</button>
             </div>
         </div>
@@ -35,6 +43,7 @@
             <p class="modal-card-title">Invite Player</p>
         </header>
         <section class="modal-card-body">
+            <div class="notification is-danger is-hidden" id="modal-error">{{ error }}</div>
             <form id="invite-player-form">
                 <div class="field">
                     <label class="label">Email</label>
@@ -50,16 +59,12 @@
         </footer>
     </div>
 </div>
-
 <script>
     // Get the modal element
     var modal = document.getElementById('invite-player-modal');
 
     // Get the button that opens the modal
     var btn = document.getElementById('invite-player-btn');
-
-    // Get the close button
-    var closeBtn = document.getElementById('close-modal-btn');
 
     // Get the cancel button
     var cancelBtn = document.getElementById('cancel-modal-btn');
@@ -74,24 +79,46 @@
         modal.classList.remove('is-active');
     }
 
-    // Get the form element
-    var form = document.getElementById('invite-player-form');
+    const inviteForm = document.getElementById('invite-player-form');
+    const modalError = document.getElementById('modal-error');
 
     // When the user submits the form, call the invite player endpoint
-    form.onsubmit = function (event) {
+    inviteForm.addEventListener('submit', async (event) => {
         event.preventDefault();
-        var email = form.elements['email'].value;
-        var adventureId = parseInt("{{ adventure.id }}");
+        const formData = new FormData(inviteForm);
+        const formJSON = Object.fromEntries(formData.entries());
+        const adventureId = parseInt("{{ adventure.id }}");
         fetch('/adventure/invite', {
             method: 'POST',
-            body: JSON.stringify({
-                email: email,
-                adventure_id: adventureId
-            }),
             headers: {
                 'Content-Type': 'application/json'
-            }
+            },
+            body: JSON.stringify({
+                email: formJSON.email,
+                adventure_id: adventureId
+            })
         })
-    }
+            .then(response => {
+                if (response.status === 201) {
+                    // Handle successful response
+                    modal.classList.remove('is-active');
+                    window.location.reload();
+                } else if (response.status === 403 || response.status === 404) {
+                    // Handle error response
+                    return response.json();
+                } else {
+                    // Handle other error responses
+                    throw new Error('An error occurred. Please try again later.');
+                }
+            })
+            .then(errorMessage => {
+                modalError.classList.remove('is-hidden');
+                modalError.textContent = 'Error: ' + errorMessage.detail;
+            })
+            .catch(error => {
+                modalError.classList.remove('is-hidden');
+                modalError.textContent = error.message;
+            });
+    });
 </script>
 {% endblock %}

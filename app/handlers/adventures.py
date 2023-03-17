@@ -116,10 +116,12 @@ def get_adventure(adventure_id: int, user_id: int) -> dict:
             status_code=403, detail="You are not allowed to view this adventure"
         )
 
-    return adventure_details_dict(adventure)
+    adventure_details = adventure_details_dict(adventure)
+    adventure_details["pending_invitations"] = get_pending_invitations(adventure)
+    return adventure_details
 
 
-def invite_player(adventure_id: int, user_id: int, email: str) -> Invitation:
+def invite_player(adventure_id: int, user_id: int, email: str) -> dict:
     """Invite a player to an adventure."""
     adventure: Adventure = get_adventure_by_id(adventure_id)
     if not adventure:
@@ -140,7 +142,17 @@ def invite_player(adventure_id: int, user_id: int, email: str) -> Invitation:
         raise HTTPException(status_code=403, detail="Player already invited")
 
     invitation: Invitation = create_invitation(adventure_id, email)
-    return invitation
+    invitation_dict = {"email": invitation.email, "status": invitation.status}
+    return invitation_dict
+
+
+def get_pending_invitations(adventure: Adventure) -> list[str]:
+    """Get pending invitations for an adventure."""
+    invitations = []
+    for invitation in adventure.invitations:
+        if invitation.status == InvitationStatusEnum.pending:
+            invitations.append(invitation.email)
+    return invitations
 
 
 def add_player_to_adventure(adventure_id: int, user_id: int) -> None:
