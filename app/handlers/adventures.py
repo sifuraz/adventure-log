@@ -1,12 +1,20 @@
 from fastapi import HTTPException
 
-from ..db.models.adventures import Adventure, AdventurePlayer, AdventureTypeEnum
+from ..db.models.adventures import (
+    Adventure,
+    AdventurePlayer,
+    AdventureRoleEnum,
+    AdventureTypeEnum,
+)
+from ..db.models.invitations import Invitation, InvitationStatusEnum
 from ..models.adventures import (
     add_adventure_player,
     create_adventure_and_dm,
     get_adventure_by_id,
     get_adventures_by_user_id,
 )
+from ..models.invitations import create_invitation, get_invitation
+from ..models.users import get_user_by_email, User
 
 
 def get_adventures_details(user_id: int) -> list[dict]:
@@ -78,25 +86,32 @@ def get_adventure_characters_details(
 def create_adventure(name: str, adventure_type: AdventureTypeEnum, user_id: int):
     """Create a new adventure."""
     # TODO already exists
-    adventure = create_adventure_and_dm(name, adventure_type, user_id)
+    adventure: Adventure = create_adventure_and_dm(name, adventure_type, user_id)
     return adventure.id
 
 
-def is_adventure_player(adventure, user_id):
-    """Check if a user is a player in an adventure."""
-    adventure_player_ids = [
-        adventure_player.player_id for adventure_player in adventure.adventure_players
-    ]
-    return user_id in adventure_player_ids
+def get_adventure_player(adventure, user_id) -> AdventurePlayer | None:
+    """Return user if they are a player in an adventure."""
+    for adventure_player in adventure.adventure_players:
+        if adventure_player.player_id == user_id:
+            return adventure_player
+    return None
+
+
+def is_adventure_dm(adventure, user_id) -> bool:
+    """Check if a user is the DM of an adventure."""
+    if not (adventure_player := get_adventure_player(adventure, user_id)):
+        return False
+    return adventure_player.role == AdventureRoleEnum.dm
 
 
 def get_adventure(adventure_id: int, user_id: int) -> dict:
     """Get an adventure."""
-    adventure = get_adventure_by_id(adventure_id)
+    adventure: Adventure = get_adventure_by_id(adventure_id)
     if not adventure:
         raise HTTPException(status_code=404, detail="Adventure not found")
 
-    if not is_adventure_player(adventure, user_id):
+    if not get_adventure_player(adventure, user_id):
         raise HTTPException(
             status_code=403, detail="You are not allowed to view this adventure"
         )
@@ -104,14 +119,38 @@ def get_adventure(adventure_id: int, user_id: int) -> dict:
     return adventure_details_dict(adventure)
 
 
-def add_player_to_adventure(adventure_id: int, user_id: int):
+def invite_player(adventure_id: int, user_id: int, email: str) -> Invitation:
+    """Invite a player to an adventure."""
+    adventure: Adventure = get_adventure_by_id(adventure_id)
+    if not adventure:
+        raise HTTPException(status_code=404, detail="Adventure not found")
+
+    if not is_adventure_dm(adventure, user_id):
+        raise HTTPException(
+            status_code=403,
+            detail="You are not allowed to invite players to this adventure",
+        )
+
+    invited_user: User | None = get_user_by_email(email)
+    if invited_user and get_adventure_player(adventure, invited_user.id):
+        raise HTTPException(status_code=403, detail="Player already in adventure")
+
+    invitation: Invitation | None = get_invitation(adventure_id, email)
+    if invitation and invitation.status == InvitationStatusEnum.pending:
+        raise HTTPException(status_code=403, detail="Player already invited")
+
+    invitation: Invitation = create_invitation(adventure_id, email)
+    return invitation
+
+
+def add_player_to_adventure(adventure_id: int, user_id: int) -> None:
     """Add a player to an adventure."""
     adventure = get_adventure_by_id(adventure_id)
     if not adventure:
         raise HTTPException(status_code=404, detail="Adventure not found")
 
-    if is_adventure_player(adventure, user_id):
+    if get_adventure_player(adventure, user_id):
         raise HTTPException(status_code=403, detail="Player already in adventure")
 
     add_adventure_player(adventure_id, user_id)
-    return
+    return None

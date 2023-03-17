@@ -3,6 +3,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 
 from .db.models.adventures import Adventure, AdventurePlayer
 from .db.models.characters import Character
+from .db.models.invitations import Invitation
 from .db.models.users import User
 from .handlers.adventures import get_adventures_details
 from .models.users import clear_user_session, get_current_user

@@ -46,8 +46,8 @@ def get_current_user(session_token: str | None = Cookie(None)) -> User | None:
     return user
 
 
-def clear_user_session(session_token: str | None = Cookie(None)):
+def clear_user_session(session_token: str | None = Cookie(None)) -> None:
     """Clear the user session."""
     if session_token:
         redis.delete(session_token)
-    return
+    return None

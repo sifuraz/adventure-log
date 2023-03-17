@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 
 from ..db.models.adventures import AdventureTypeEnum
 from ..db.models.users import User
@@ -54,5 +54,8 @@ def invite_player(
     adventure_invite: AdventureInvite, user: User = Depends(get_current_user)
 ):
     """Invite a player to an adventure."""
-    print(adventure_invite.email, adventure_invite.adventure_id, user.username)
-    return "OK"
+    invitation = adventures.invite_player(
+        adventure_invite.adventure_id, user.id, adventure_invite.email
+    )
+    response_data = {"email": invitation.email, "status": invitation.status}
+    return JSONResponse(content=response_data)

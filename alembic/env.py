@@ -23,6 +23,7 @@ from app.db import config as db_config
 from app.db.models import users
 from app.db.models import adventures
 from app.db.models import characters
+from app.db.models import invitations
 
 target_metadata = db_config.Base.metadata
 
