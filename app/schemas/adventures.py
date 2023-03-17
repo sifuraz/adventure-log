@@ -6,3 +6,8 @@ from ..db.models.adventures import AdventureTypeEnum
 class AdventureCreate(BaseModel):
     name: str
     type: AdventureTypeEnum
+
+
+class AdventureInvite(BaseModel):
+    email: str
+    adventure_id: int

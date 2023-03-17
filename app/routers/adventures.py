@@ -5,7 +5,7 @@ from ..db.models.adventures import AdventureTypeEnum
 from ..db.models.users import User
 from ..handlers import adventures
 from ..models.users import get_current_user
-from ..schemas.adventures import AdventureCreate
+from ..schemas.adventures import AdventureCreate, AdventureInvite
 from ..settings import templates
 
 
@@ -49,7 +49,10 @@ def show_adventure(
     )
 
 
-@router.post("/adventure/{adventure_id}/player", status_code=201)
-def add_player(player_email: str, user: User = Depends(get_current_user)):
-    """Add a player to an adventure."""
-    pass
+@router.post("/adventure/invite", status_code=201)
+def invite_player(
+    adventure_invite: AdventureInvite, user: User = Depends(get_current_user)
+):
+    """Invite a player to an adventure."""
+    print(adventure_invite.email, adventure_invite.adventure_id, user.username)
+    return "OK"
