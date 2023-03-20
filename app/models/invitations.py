@@ -2,12 +2,14 @@ from ..db.config import database
 from ..db.models.invitations import Invitation, InvitationStatusEnum
 
 
-def get_invitation(adventure_id: int, email: str) -> Invitation:
+def get_invitations(
+    adventure_id: int, email: str, status: InvitationStatusEnum
+) -> list[Invitation]:
     """Get an invitation by adventure ID and email."""
     return (
         database.query(Invitation)
-        .filter_by(adventure_id=adventure_id, email=email)
-        .first()
+        .filter_by(adventure_id=adventure_id, email=email, status=status)
+        .all()
     )
 
 

@@ -21,6 +21,7 @@
                     {% endif %}
                     {% endfor %}
                 </ul>
+                {% if user.id == adventure.dm.id %}
                 {% if adventure.pending_invitations %}
                 <h3>Pending Invitations:</h3>
                 <ul>
@@ -30,12 +31,22 @@
                 </ul>
                 {% endif %}
                 <button class="button" id="invite-player-btn">Invite Player</button>
+                {% else %}
+                {% for player in adventure.players %}
+                {% if player.id == user.id %}
+                {% if not player.character %}
+                <button class="button" id="create-character-btn">Create Character</button>
+                {% endif %}
+                {% endif %}
+                {% endfor %}
+                {% endif %}
             </div>
         </div>
     </div>
 </section>
 
 <!-- Modal -->
+{% if user.id == adventure.dm.id %}
 <div class="modal" id="invite-player-modal">
     <div class="modal-background"></div>
     <div class="modal-card">
@@ -43,7 +54,7 @@
             <p class="modal-card-title">Invite Player</p>
         </header>
         <section class="modal-card-body">
-            <div class="notification is-danger is-hidden" id="modal-error">{{ error }}</div>
+            <div class="notification is-danger is-hidden" id="invite-modal-error">{{ error }}</div>
             <form id="invite-player-form">
                 <div class="field">
                     <label class="label">Email</label>
@@ -55,48 +66,127 @@
         </section>
         <footer class="modal-card-foot">
             <button class="button is-success" type="submit" form="invite-player-form">Invite</button>
-            <button class="button" id="cancel-modal-btn">Cancel</button>
+            <button class="button" id="cancel-invite-modal-btn">Cancel</button>
         </footer>
     </div>
 </div>
+{% else %}
+<div class="modal" id="create-character-modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Create Character</p>
+        </header>
+        <section class="modal-card-body">
+            <div class="notification is-danger is-hidden" id="character-modal-error">{{ error }}</div>
+            <form id="create-character-form">
+                <div class="field">
+                    <label class="label">Name</label>
+                    <div class="control">
+                        <input class="input" type="text" placeholder="Enter name" name="name" required>
+                    </div>
+                </div>
+            </form>
+        </section>
+        <footer class="modal-card-foot">
+            <button class="button is-success" type="submit" form="create-character-form">Create</button>
+            <button class="button" id="cancel-character-modal-btn">Cancel</button>
+        </footer>
+    </div>
+</div>
+{% endif %}
 <script>
     // Get the modal element
-    var modal = document.getElementById('invite-player-modal');
+    let modal = NaN;
+    let inviteModal = document.getElementById('invite-player-modal');
+    let characterModal = document.getElementById('create-character-modal');
+    if (inviteModal) {
+        modal = inviteModal;
+    } else if (characterModal) {
+        modal = characterModal;
+    }
 
     // Get the button that opens the modal
-    var btn = document.getElementById('invite-player-btn');
+    let btn = NaN;
+    let inviteBtn = document.getElementById('invite-player-btn');
+    let characterBtn = document.getElementById('create-character-btn');
+    if (inviteBtn) {
+        btn = inviteBtn;
+    } else if (characterBtn) {
+        btn = characterBtn;
+    }
 
     // Get the cancel button
-    var cancelBtn = document.getElementById('cancel-modal-btn');
+    let cancelBtn = NaN;
+    let inviteCancelBtn = document.getElementById('cancel-invite-modal-btn');
+    let characterCancelBtn = document.getElementById('cancel-character-modal-btn');
+    if (inviteCancelBtn) {
+        cancelBtn = inviteCancelBtn;
+    } else if (characterCancelBtn) {
+        cancelBtn = characterCancelBtn;
+    }
 
     // When the user clicks the button, open the modal
-    btn.onclick = function () {
-        modal.classList.add('is-active');
+    if (btn) {
+        btn.onclick = function () {
+            modal.classList.add('is-active');
+        }
     }
 
     // When the user clicks on the cancel button, close the modal
-    cancelBtn.onclick = function () {
-        modal.classList.remove('is-active');
+    if (cancelBtn) {
+        cancelBtn.onclick = function () {
+            modal.classList.remove('is-active');
+        }
     }
 
-    const inviteForm = document.getElementById('invite-player-form');
-    const modalError = document.getElementById('modal-error');
+    let form = NaN;
+    let url = NaN;
+    let inviteForm = document.getElementById('invite-player-form');
+    let characterForm = document.getElementById('create-character-form');
+    if (inviteForm) {
+        form = inviteForm;
+        url = '/adventure/invite';
+    } else if (characterForm) {
+        form = characterForm;
+        url = '/character';
+    }
+
+    let modalError = NaN;
+    let inviteModalError = document.getElementById('invite-modal-error');
+    let characterModalError = document.getElementById('character-modal-error');
+    if (inviteModalError) {
+        modalError = inviteModalError;
+    } else if (characterModalError) {
+        modalError = characterModalError;
+    }
 
     // When the user submits the form, call the invite player endpoint
-    inviteForm.addEventListener('submit', async (event) => {
+    form.addEventListener('submit', async (event) => {
+        console.log('submit')
         event.preventDefault();
-        const formData = new FormData(inviteForm);
+        const formData = new FormData(form);
         const formJSON = Object.fromEntries(formData.entries());
         const adventureId = parseInt("{{ adventure.id }}");
-        fetch('/adventure/invite', {
+        let body = NaN;
+        if (url === '/adventure/invite') {
+            body = JSON.stringify({
+                email: formJSON.email,
+                adventure_id: adventureId
+            });
+        } else if (url === '/character') {
+            body = JSON.stringify({
+                name: formJSON.name,
+                adventure_id: adventureId
+            });
+        }
+        console.log(body)
+        fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                email: formJSON.email,
-                adventure_id: adventureId
-            })
+            body: body
         })
             .then(response => {
                 if (response.status === 201) {

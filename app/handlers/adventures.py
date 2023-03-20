@@ -15,7 +15,7 @@ from ..models.adventures import (
 )
 from ..models.invitations import (
     create_invitation,
-    get_invitation,
+    get_invitations,
     get_pending_invitations_for_email,
     set_invitation_status,
 )
@@ -44,6 +44,9 @@ def adventure_details_dict(adventure: Adventure) -> dict:
         "players": get_adventure_players_details(adventure.adventure_players),
         "characters": get_adventure_characters_details(adventure.adventure_players),
     }
+    adventure_details["dm"] = [
+        player for player in adventure_details["players"] if player["role"] == "dm"
+    ][0]
     return adventure_details
 
 
@@ -142,8 +145,10 @@ def invite_player(adventure_id: int, user_id: int, email: str) -> dict:
     if invited_user and get_adventure_player(adventure, invited_user.id):
         raise HTTPException(status_code=403, detail="Player already in adventure")
 
-    invitation: Invitation | None = get_invitation(adventure_id, email)
-    if invitation and invitation.status == InvitationStatusEnum.pending:
+    invitations: list[Invitation] = get_invitations(
+        adventure_id, email, InvitationStatusEnum.pending
+    )
+    if invitations:
         raise HTTPException(status_code=403, detail="Player already invited")
 
     invitation: Invitation = create_invitation(adventure_id, email)
@@ -175,16 +180,13 @@ def validate_invitation(adventure_id: int, user: User) -> Invitation:
     if not adventure:
         raise HTTPException(status_code=404, detail="Adventure not found")
 
-    invitation: Invitation | None = get_invitation(adventure_id, user.email)
-    if not invitation:
+    invitations: list[Invitation] = get_invitations(
+        adventure_id, user.email, InvitationStatusEnum.pending
+    )
+    if not invitations:
         raise HTTPException(status_code=404, detail="Invitation not found")
 
-    if invitation.status != InvitationStatusEnum.pending:
-        raise HTTPException(
-            status_code=403, detail=f"Invitation already {invitation.status}"
-        )
-
-    return invitation
+    return invitations[0]
 
 
 def decline_invitation(adventure_id: int, user: User) -> None:
