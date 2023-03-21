@@ -25,6 +25,6 @@ def create_character(name: str, adventure_id: int, user_id: int) -> dict:
             detail="You already have a character in this adventure",
         )
 
-    character = create_and_link_character(name, adventure_id, user_id)
+    character = create_and_link_character(name, adventure_player)
     character_dict = {"name": character.name}
     return character_dict

@@ -46,3 +46,4 @@ class Adventure(Base, TimestampMixin):
         back_populates="adventure"
     )
     invitations: Mapped[list["Invitation"]] = relationship(back_populates="adventure")
+    sessions: Mapped[list["Session"]] = relationship(back_populates="adventure")

@@ -24,6 +24,7 @@ from app.db.models import users
 from app.db.models import adventures
 from app.db.models import characters
 from app.db.models import invitations
+from app.db.models import sessions
 
 target_metadata = db_config.Base.metadata
 
