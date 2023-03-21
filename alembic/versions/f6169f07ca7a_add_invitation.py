@@ -49,4 +49,5 @@ def downgrade() -> None:
     op.drop_index(op.f("ix_invitations_id"), table_name="invitations")
     op.drop_index(op.f("ix_invitations_created_at"), table_name="invitations")
     op.drop_table("invitations")
+    op.execute("DROP TYPE IF EXISTS invitationstatusenum;")
     # ### end Alembic commands ###

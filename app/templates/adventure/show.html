@@ -30,6 +30,7 @@
                     {% endfor %}
                 </ul>
                 {% endif %}
+                <button class="button" id="new-session-btn">New Session</button>
                 <button class="button" id="invite-player-btn">Invite Player</button>
                 {% else %}
                 {% for player in adventure.players %}
@@ -70,6 +71,23 @@
         </footer>
     </div>
 </div>
+<div class="modal" id="new-session-modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">New Session</p>
+        </header>
+        <section class="modal-card-body">
+            <div class="notification is-danger is-hidden" id="session-modal-error">{{ error }}</div>
+            <label for="session-date">Select a date:</label>
+            <input type="date" id="session-date">
+        </section>
+        <footer class="modal-card-foot">
+            <button class="button is-success" type="submit" id="create-session-modal-btn">Create</button>
+            <button class="button" id="cancel-session-modal-btn">Cancel</button>
+        </footer>
+    </div>
+</div>
 {% else %}
 <div class="modal" id="create-character-modal">
     <div class="modal-background"></div>
@@ -100,6 +118,7 @@
     let modal = NaN;
     let inviteModal = document.getElementById('invite-player-modal');
     let characterModal = document.getElementById('create-character-modal');
+    let newSessionModal = document.getElementById('new-session-modal');
     if (inviteModal) {
         modal = inviteModal;
     } else if (characterModal) {
@@ -110,6 +129,7 @@
     let btn = NaN;
     let inviteBtn = document.getElementById('invite-player-btn');
     let characterBtn = document.getElementById('create-character-btn');
+    let newSessionBtn = document.getElementById('new-session-btn');
     if (inviteBtn) {
         btn = inviteBtn;
     } else if (characterBtn) {
@@ -120,6 +140,7 @@
     let cancelBtn = NaN;
     let inviteCancelBtn = document.getElementById('cancel-invite-modal-btn');
     let characterCancelBtn = document.getElementById('cancel-character-modal-btn');
+    let sessionCancelBtn = document.getElementById('cancel-session-modal-btn');
     if (inviteCancelBtn) {
         cancelBtn = inviteCancelBtn;
     } else if (characterCancelBtn) {
@@ -132,11 +153,21 @@
             modal.classList.add('is-active');
         }
     }
+    if (newSessionBtn && newSessionModal) {
+        newSessionBtn.onclick = function () {
+            newSessionModal.classList.add('is-active');
+        }
+    }
 
     // When the user clicks on the cancel button, close the modal
     if (cancelBtn) {
         cancelBtn.onclick = function () {
             modal.classList.remove('is-active');
+        }
+    }
+    if (sessionCancelBtn) {
+        sessionCancelBtn.onclick = function () {
+            newSessionModal.classList.remove('is-active');
         }
     }
 
@@ -161,9 +192,50 @@
         modalError = characterModalError;
     }
 
+    let createSessionBtn = document.getElementById('create-session-modal-btn');
+    if (createSessionBtn) {
+        let sessionDatePicker = document.getElementById('session-date');
+        let sessionModalError = document.getElementById('session-modal-error');
+        createSessionBtn.onclick = function () {
+            let date = sessionDatePicker.value;
+            const adventureId = parseInt("{{ adventure.id }}");
+            let body = JSON.stringify({
+                date: date,
+                adventure_id: adventureId
+            });
+            fetch('/session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: body
+            })
+            .then(response => {
+                if (response.status === 201) {
+                    // Handle successful response
+                    newSessionModal.classList.remove('is-active');
+                    window.location.reload();
+                } else if (response.status === 400 || response.status === 403 || response.status === 404) {
+                    // Handle error response
+                    return response.json();
+                } else {
+                    // Handle other error responses
+                    throw new Error('An error occurred. Please try again later.');
+                }
+            })
+            .then(errorMessage => {
+                sessionModalError.classList.remove('is-hidden');
+                sessionModalError.textContent = 'Error: ' + errorMessage.detail;
+            })
+            .catch(error => {
+                sessionModalError.classList.remove('is-hidden');
+                sessionModalError.textContent = error.message;
+            });
+        }
+    }
+
     // When the user submits the form, call the invite player endpoint
     form.addEventListener('submit', async (event) => {
-        console.log('submit')
         event.preventDefault();
         const formData = new FormData(form);
         const formJSON = Object.fromEntries(formData.entries());
@@ -180,7 +252,6 @@
                 adventure_id: adventureId
             });
         }
-        console.log(body)
         fetch(url, {
             method: 'POST',
             headers: {

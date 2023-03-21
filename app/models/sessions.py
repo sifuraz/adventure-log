@@ -11,3 +11,10 @@ def add_session(date: datetime.date, adventure_id: int) -> Session:
     database.commit()
     database.refresh(session)
     return session
+
+
+def get_session_by_date(date: datetime.date, adventure_id: int) -> Session:
+    """Get a session by date."""
+    return (
+        database.query(Session).filter_by(date=date, adventure_id=adventure_id).first()
+    )

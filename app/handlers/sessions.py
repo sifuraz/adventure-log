@@ -5,7 +5,7 @@ from fastapi import HTTPException
 from ..db.models.adventures import Adventure
 from ..handlers.adventures import is_adventure_dm
 from ..models.adventures import get_adventure_by_id
-from ..models.sessions import add_session
+from ..models.sessions import add_session, get_session_by_date
 
 
 def create_session(date_str: str, adventure_id: int, user_id: int) -> None:
@@ -21,5 +21,12 @@ def create_session(date_str: str, adventure_id: int, user_id: int) -> None:
         )
 
     date = datetime.strptime(date_str, "%Y-%m-%d").date()
+    session = get_session_by_date(date, adventure_id)
+    if session:
+        raise HTTPException(
+            status_code=400,
+            detail="A session already exists for this date in this adventure",
+        )
+
     add_session(date, adventure_id)
     return

@@ -95,4 +95,6 @@ def downgrade() -> None:
     op.drop_index(op.f("ix_adventures_id"), table_name="adventures")
     op.drop_index(op.f("ix_adventures_created_at"), table_name="adventures")
     op.drop_table("adventures")
+    op.execute("DROP TYPE IF EXISTS adventuretypeenum;")
+    op.execute("DROP TYPE IF EXISTS adventureroleenum;")
     # ### end Alembic commands ###
