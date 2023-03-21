@@ -1,8 +1,8 @@
 """add Session
 
-Revision ID: d1d49eb67aea
+Revision ID: 2de4083c9699
 Revises: f6169f07ca7a
-Create Date: 2023-03-21 17:59:37.019588
+Create Date: 2023-03-21 18:06:30.158922
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = "d1d49eb67aea"
+revision = "2de4083c9699"
 down_revision = "f6169f07ca7a"
 branch_labels = None
 depends_on = None
@@ -21,7 +21,7 @@ def upgrade() -> None:
     op.create_table(
         "sessions",
         sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("date", sa.DateTime(), nullable=False),
+        sa.Column("date", sa.Date(), nullable=False),
         sa.Column("summary", sa.String(length=255), nullable=True),
         sa.Column("adventure_id", sa.Integer(), nullable=False),
         sa.Column(
