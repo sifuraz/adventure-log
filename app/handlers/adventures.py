@@ -99,7 +99,7 @@ def get_adventure_sessions_details(adventure: Adventure) -> list[dict]:
         sessions.append(
             {
                 "id": session.id,
-                "date": str(session.date),
+                "date": session.date.strftime("%d. %m. %Y"),
             }
         )
     return sessions

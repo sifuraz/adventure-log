@@ -1,10 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ session.id }}</title>
-</head>
-<body>
-
-</body>
-</html>
+{% extends "double_nested_base.html" %}
+{% block title %}Session {{ session.date }}{% endblock %}
+{% block main_title %}Session {{ session.date }}{% endblock %}
+{% block content %}
+{{ session.summary }}
+{% endblock %}

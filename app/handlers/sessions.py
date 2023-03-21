@@ -48,6 +48,10 @@ def get_session(adventure_id: int, session_id: int, user_id: int) -> dict:
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
 
-    session_details = {"id": session.id, "date": str(session.date)}
+    session_details = {
+        "id": session.id,
+        "date": session.date.strftime("%d. %m. %Y"),
+        "summary": session.summary,
+    }
 
     return session_details
