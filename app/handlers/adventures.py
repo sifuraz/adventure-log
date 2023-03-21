@@ -43,6 +43,7 @@ def adventure_details_dict(adventure: Adventure) -> dict:
         "type": adventure.type.value,
         "players": get_adventure_players_details(adventure.adventure_players),
         "characters": get_adventure_characters_details(adventure.adventure_players),
+        "sessions": get_adventure_sessions_details(adventure),
     }
     adventure_details["dm"] = [
         player for player in adventure_details["players"] if player["role"] == "dm"
@@ -89,6 +90,19 @@ def get_adventure_characters_details(
         }
         characters.append(character)
     return characters
+
+
+def get_adventure_sessions_details(adventure: Adventure) -> list[dict]:
+    """Get session details for an adventure."""
+    sessions = []
+    for session in adventure.sessions:
+        sessions.append(
+            {
+                "id": session.id,
+                "date": str(session.date),
+            }
+        )
+    return sessions
 
 
 def create_adventure(name: str, adventure_type: AdventureTypeEnum, user_id: int):

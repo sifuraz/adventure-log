@@ -18,3 +18,8 @@ def get_session_by_date(date: datetime.date, adventure_id: int) -> Session:
     return (
         database.query(Session).filter_by(date=date, adventure_id=adventure_id).first()
     )
+
+
+def get_session_by_id(session_id: int) -> Session:
+    """Get a session by id."""
+    return database.query(Session).get(session_id)

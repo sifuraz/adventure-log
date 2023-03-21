@@ -42,6 +42,16 @@
                 {% endfor %}
                 {% endif %}
             </div>
+            {% if adventure.sessions %}
+            <div class="adventure-details">
+                <p class="subheading">Sessions</p>
+                <ul>
+                    {% for session in adventure.sessions %}
+                    <li><a href="{{ url_for('show_session', adventure_id=adventure.id, session_id=session.id) }}">{{ session.date }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
         </div>
     </div>
 </section>

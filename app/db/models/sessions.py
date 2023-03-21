@@ -8,13 +8,11 @@ from .mixins import TimestampMixin
 class Session(Base, TimestampMixin):
     __tablename__ = "sessions"
 
-    id: Mapped[int] = mapped_column(
-        primary_key=True, index=True, autoincrement=True, nullable=False
-    )
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
     date = Column(Date, index=True, nullable=False)
     summary = Column(String(255), nullable=True)
     adventure_id: Mapped[int] = mapped_column(
-        ForeignKey("adventures.id"), primary_key=True
+        ForeignKey("adventures.id"), nullable=False
     )
 
     adventure: Mapped["Adventure"] = relationship(back_populates="sessions")
