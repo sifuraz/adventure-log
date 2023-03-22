@@ -21,3 +21,4 @@ class User(Base, TimestampMixin):
     adventure_players: Mapped[list["AdventurePlayer"]] = relationship(
         back_populates="player"
     )
+    notes: Mapped[list["Note"]] = relationship(back_populates="author")

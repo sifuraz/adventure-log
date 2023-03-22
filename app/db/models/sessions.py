@@ -16,3 +16,4 @@ class Session(Base, TimestampMixin):
     )
 
     adventure: Mapped["Adventure"] = relationship(back_populates="sessions")
+    notes: Mapped[list["Note"]] = relationship(back_populates="session")
