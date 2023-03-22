@@ -22,6 +22,7 @@ def create_session(
     return
 
 
+# TODO fix url remove adventure_id
 @router.get(
     "/adventure/{adventure_id}/session/{session_id}", response_class=HTMLResponse
 )

@@ -9,6 +9,15 @@
         <div>
             <div class="adventure-details">
                 <p class="subheading">Notes</p>
+                {% if session.notes %}
+                <ul>
+                    {% for note in session.notes %}
+                    <li>{{ note.text }} by {{ note.author_username }}</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p>No notes yet.</p>
+                {% endif %}
                 <button class="button" id="new-note-btn">New Note</button>
             </div>
         </div>

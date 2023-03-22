@@ -9,7 +9,7 @@ from .db.models.sessions import Session
 from .db.models.users import User
 from .handlers.adventures import get_adventures_details, get_invited_adventures
 from .models.users import clear_user_session, get_current_user
-from .routers import adventures, characters, users, sessions
+from .routers import adventures, characters, notes, users, sessions
 from .settings import static, templates
 
 # TODO response schemas granularity
@@ -32,6 +32,11 @@ app.include_router(
 app.include_router(
     characters.router,
     tags=["characters"],
+    dependencies=[Depends(get_current_user)],
+)
+app.include_router(
+    notes.router,
+    tags=["notes"],
     dependencies=[Depends(get_current_user)],
 )
 app.include_router(
