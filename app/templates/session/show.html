@@ -3,4 +3,96 @@
 {% block main_title %}Session {{ session.date }}{% endblock %}
 {% block content %}
 {{ session.summary }}
+<section class="section">
+    <div class="container">
+        <div class="notification is-danger is-hidden" id="error">{{ error }}</div>
+        <div>
+            <div class="adventure-details">
+                <p class="subheading">Notes</p>
+                <button class="button" id="new-note-btn">New Note</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal" id="new-note-modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">New Note</p>
+        </header>
+        <section class="modal-card-body">
+            <div class="notification is-danger is-hidden" id="note-modal-error">{{ error }}</div>
+            <form id="new-note-form">
+                <div class="field">
+                    <label class="label" for="note-text">Text</label>
+                    <div class="control">
+                        <textarea class="textarea" id="note-text" name="note-text" rows=30, cols=80,
+                                  placeholder="Note text"></textarea><br>
+                        <input type="checkbox" id="secret" name="secret">
+                        <label class="label" for="secret">Mark as Secret</label><br>
+                    </div>
+                </div>
+            </form>
+        </section>
+        <footer class="modal-card-foot">
+            <button class="button" type="submit" form="new-note-form">Submit</button>
+            <button class="button" id="cancel-note-modal-btn">Cancel</button>
+        </footer>
+    </div>
+</div>
+
+<script>
+    let newNoteModal = document.getElementById('new-note-modal');
+    let newNoteBtn = document.getElementById('new-note-btn');
+    let cancelNoteModalBtn = document.getElementById('cancel-note-modal-btn');
+    let noteModalError = document.getElementById('note-modal-error');
+
+    newNoteBtn.onclick = function () {
+        newNoteModal.classList.add('is-active');
+    }
+
+    cancelNoteModalBtn.onclick = function () {
+        newNoteModal.classList.remove('is-active');
+    }
+
+    let newNoteForm = document.getElementById('new-note-form');
+    newNoteForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        let noteText = document.getElementById('note-text').value;
+        let noteIsSecret = document.getElementById('secret').checked;
+        let noteSessionId = parseInt("{{ session.id }}");
+        let noteData = {
+            'text': noteText,
+            'is_secret': noteIsSecret,
+            'session_id': noteSessionId
+        };
+        let noteDataJson = JSON.stringify(noteData);
+        fetch('/note', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: noteDataJson
+        })
+            .then(response => {
+                if (response.status === 201) {
+                    newNoteModal.classList.remove('is-active');
+                    window.location.reload();
+                } else if (response.status === 403 || response.status === 404) {
+                    return response.json();
+                } else {
+                    throw new Error('An error occurred. Please try again later.');
+                }
+            })
+            .then(errorMessage => {
+                noteModalError.classList.remove('is-hidden');
+                noteModalError.textContent = 'Error: ' + errorMessage.detail;
+            })
+            .catch(error => {
+                noteModalError.classList.remove('is-hidden');
+                noteModalError.textContent = error.message;
+            });
+    });
+</script>
 {% endblock %}

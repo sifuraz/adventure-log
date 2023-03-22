@@ -4,6 +4,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from .db.models.adventures import Adventure, AdventurePlayer
 from .db.models.characters import Character
 from .db.models.invitations import Invitation
+from .db.models.notes import Note
 from .db.models.sessions import Session
 from .db.models.users import User
 from .handlers.adventures import get_adventures_details, get_invited_adventures
