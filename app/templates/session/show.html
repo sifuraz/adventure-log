@@ -2,24 +2,33 @@
 {% block title %}Session {{ session.date }}{% endblock %}
 {% block main_title %}Session {{ session.date }}{% endblock %}
 {% block content %}
-{{ session.summary }}
 <section class="section">
     <div class="container">
         <div class="notification is-danger is-hidden" id="error">{{ error }}</div>
         <div>
+            {% if session.notes %}
             <div class="adventure-details">
-                <p class="subheading">Notes</p>
-                {% if session.notes %}
-                <ul>
+                <div class="tab" id="tabs">
                     {% for note in session.notes %}
-                    <li>{{ note.text }} by {{ note.author_username }}</li>
+                    <button class="tablinks" onclick="openNote(event, '{{ note.author_id }}')">{{ note.author_username
+                        }}'s Notes
+                    </button>
                     {% endfor %}
-                </ul>
-                {% else %}
-                <p>No notes yet.</p>
-                {% endif %}
-                <button class="button" id="new-note-btn">New Note</button>
+                    {% set author_ids = (session.notes | map(attribute='author_id')) | list %}
+                    {% if user.id not in author_ids %}
+                    <button class="tablinks" onclick="openNote(event, 'new-note')">+</button>
+                    {% endif %}
+                </div>
+                {% for note in session.notes %}
+                <div id="{{ note.author_id }}" class="tabcontent">
+                    <p>{{ note.text }}</p>
+                </div>
+                {% endfor %}
+                <div id="new-note" class="tabcontent">
+                    <button class="button" id="new-note-btn">New Note</button>
+                </div>
             </div>
+            {% endif %}
         </div>
     </div>
 </section>
@@ -52,6 +61,29 @@
 </div>
 
 <script>
+    document.getElementById("tabs").firstElementChild.click();
+
+    function openNote(evt, cityName) {
+        // Declare all variables
+        var i, tabcontent, tablinks;
+
+        // Get all elements with class="tabcontent" and hide them
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+
+        // Get all elements with class="tablinks" and remove the class "active"
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+
+        // Show the current tab, and add an "active" class to the button that opened the tab
+        document.getElementById(cityName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+
     let newNoteModal = document.getElementById('new-note-modal');
     let newNoteBtn = document.getElementById('new-note-btn');
     let cancelNoteModalBtn = document.getElementById('cancel-note-modal-btn');
